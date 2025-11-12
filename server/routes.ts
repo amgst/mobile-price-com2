@@ -2,6 +2,39 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 
+const MOBILEAPI_BASE_URL = "https://api.mobileapi.dev";
+const API_KEY = process.env.MOBILEAPI_KEY;
+const USE_MOCK_DATA = !API_KEY;
+
+if (!API_KEY) {
+  console.warn("⚠️  MOBILEAPI_KEY not found - using mock data");
+  console.warn("⚠️  Add your API key to use real device data from MobileAPI.dev");
+}
+
+async function fetchFromMobileAPI(endpoint: string, params: Record<string, string> = {}) {
+  const url = new URL(endpoint, MOBILEAPI_BASE_URL);
+  url.searchParams.append("key", API_KEY || "");
+  
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) {
+      url.searchParams.append(key, value);
+    }
+  });
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`MobileAPI error: ${response.status} - ${errorText}`);
+  }
+
+  return response.json();
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/devices/search", async (req, res) => {
     try {
@@ -11,13 +44,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "name parameter is required" });
       }
 
-      const devices = await storage.searchDevices({
-        name: name as string,
-        manufacturer: manufacturer as string | undefined,
-        limit: limit ? parseInt(limit as string) : undefined,
-      });
+      let data;
+      if (USE_MOCK_DATA) {
+        data = await storage.searchDevices({
+          name: name as string,
+          manufacturer: manufacturer as string | undefined,
+          limit: limit ? parseInt(limit as string) : undefined,
+        });
+      } else {
+        const params: Record<string, string> = { name: name as string };
+        if (manufacturer) params.manufacturer = manufacturer as string;
+        if (limit) params.limit = limit as string;
+        data = await fetchFromMobileAPI("/devices/search/", params);
+      }
 
-      res.json(devices);
+      res.json(data);
     } catch (error) {
       console.error("Error searching devices:", error);
       res.status(500).json({ 
@@ -35,12 +76,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "q parameter is required" });
       }
 
-      const suggestions = await storage.autocompleteDevices(
-        q as string,
-        limit ? parseInt(limit as string) : undefined
-      );
+      let data;
+      if (USE_MOCK_DATA) {
+        data = await storage.autocompleteDevices(
+          q as string,
+          limit ? parseInt(limit as string) : undefined
+        );
+      } else {
+        const params: Record<string, string> = { q: q as string };
+        if (limit) params.limit = limit as string;
+        data = await fetchFromMobileAPI("/devices/autocomplete/", params);
+      }
 
-      res.json(suggestions);
+      res.json(data);
     } catch (error) {
       console.error("Error fetching autocomplete:", error);
       res.status(500).json({ 
@@ -58,10 +106,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Device ID is required" });
       }
 
-      const device = await storage.getDeviceById(parseInt(id));
-      
-      if (!device) {
-        return res.status(404).json({ error: "Device not found" });
+      let device;
+      if (USE_MOCK_DATA) {
+        device = await storage.getDeviceById(parseInt(id));
+        if (!device) {
+          return res.status(404).json({ error: "Device not found" });
+        }
+      } else {
+        device = await fetchFromMobileAPI(`/devices/${id}/`);
       }
 
       res.json(device);
@@ -83,10 +135,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Manufacturer is required" });
       }
 
-      const devices = await storage.getDevicesByManufacturer(
-        manufacturer as string,
-        limit ? parseInt(limit as string) : undefined
-      );
+      let devices;
+      if (USE_MOCK_DATA) {
+        devices = await storage.getDevicesByManufacturer(
+          manufacturer as string,
+          limit ? parseInt(limit as string) : undefined
+        );
+      } else {
+        const params: Record<string, string> = { manufacturer: manufacturer as string };
+        if (limit) params.limit = limit as string;
+        devices = await fetchFromMobileAPI("/devices/by-manufacturer/", params);
+      }
 
       res.json(devices);
     } catch (error) {
@@ -107,10 +166,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Year is required" });
       }
 
-      const devices = await storage.getDevicesByYear(
-        year as string,
-        limit ? parseInt(limit as string) : undefined
-      );
+      let devices;
+      if (USE_MOCK_DATA) {
+        devices = await storage.getDevicesByYear(
+          year as string,
+          limit ? parseInt(limit as string) : undefined
+        );
+      } else {
+        const params: Record<string, string> = { year: year as string };
+        if (limit) params.limit = limit as string;
+        devices = await fetchFromMobileAPI("/devices/by-year/", params);
+      }
 
       res.json(devices);
     } catch (error) {
