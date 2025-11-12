@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 
-const MOBILEAPI_BASE_URL = "https://api.mobileapi.dev";
+const MOBILEAPI_BASE_URL = "https://mobileapi.dev";
 const API_KEY = process.env.MOBILEAPI_KEY;
 const USE_MOCK_DATA = !API_KEY;
 
