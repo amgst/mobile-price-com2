@@ -4,55 +4,18 @@ import { SearchBar } from "@/components/search-bar";
 import { DeviceCard } from "@/components/device-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Smartphone, Tablet, Watch, Search, Filter, Scale } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Search, Filter, Scale } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import heroImage from "@assets/generated_images/Hero_image_flagship_devices_276d2ba8.png";
 
 export default function Home() {
   const [, setLocation] = useLocation();
 
-  const featuredDevices = [
-    {
-      id: "1",
-      name: "iPhone 15 Pro Max",
-      brand: "Apple",
-      image: "https://images.unsplash.com/photo-1696446702052-1fbb43c00af0?w=400&h=600&fit=crop",
-      screenSize: '6.7"',
-      camera: "48MP",
-      battery: "4422mAh",
-      price: "$1,199",
-    },
-    {
-      id: "2",
-      name: "Galaxy S24 Ultra",
-      brand: "Samsung",
-      image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=600&fit=crop",
-      screenSize: '6.8"',
-      camera: "200MP",
-      battery: "5000mAh",
-      price: "$1,299",
-    },
-    {
-      id: "3",
-      name: "Pixel 8 Pro",
-      brand: "Google",
-      image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=600&fit=crop",
-      screenSize: '6.7"',
-      camera: "50MP",
-      battery: "5050mAh",
-      price: "$999",
-    },
-    {
-      id: "4",
-      name: "OnePlus 12",
-      brand: "OnePlus",
-      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=600&fit=crop",
-      screenSize: '6.82"',
-      camera: "50MP",
-      battery: "5400mAh",
-      price: "$799",
-    },
-  ];
+  const { data: featuredDevices, isLoading } = useQuery<any[]>({
+    queryKey: ["/api/devices/search?name=iPhone&limit=4"],
+  });
 
   const brands = [
     { name: "Apple", logo: "🍎" },
@@ -62,6 +25,11 @@ export default function Home() {
     { name: "Xiaomi", logo: "📲" },
     { name: "Huawei", logo: "📳" },
   ];
+
+  const convertImageToUrl = (base64: string | undefined) => {
+    if (!base64) return "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=600&fit=crop";
+    return `data:image/jpeg;base64,${base64}`;
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -109,22 +77,43 @@ export default function Home() {
               Discover the newest flagship devices from top brands
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {featuredDevices.map((device) => (
-              <DeviceCard
-                key={device.id}
-                {...device}
-                onClick={() => setLocation(`/device/${device.id}`)}
-              />
-            ))}
-          </div>
-          <div className="text-center">
-            <Link href="/browse">
-              <Button size="lg" data-testid="button-view-all">
-                View All Devices
-              </Button>
-            </Link>
-          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-[3/4] w-full" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {featuredDevices?.slice(0, 4).map((device) => (
+                  <DeviceCard
+                    key={device.id}
+                    id={device.id.toString()}
+                    name={device.name}
+                    brand={device.manufacturer_name || device.brand || ""}
+                    image={convertImageToUrl(device.image_b64)}
+                    screenSize={device.screen_resolution?.split(",")[0] || "N/A"}
+                    camera={device.camera || "N/A"}
+                    battery={device.battery_capacity || "N/A"}
+                    onClick={() => setLocation(`/device/${device.id}`)}
+                  />
+                ))}
+              </div>
+              <div className="text-center">
+                <Link href="/browse">
+                  <Button size="lg" data-testid="button-view-all">
+                    View All Devices
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
         </section>
 
         <section className="py-16">

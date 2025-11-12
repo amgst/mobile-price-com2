@@ -1,18 +1,43 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+export type User = {
+  id: string;
+  username: string;
+  password: string;
+};
+
+export type InsertUser = {
+  username: string;
+  password: string;
+};
+
+export const deviceSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  brand: z.string().optional(),
+  manufacturer_name: z.string().optional(),
+  image_b64: z.string().optional(),
+  main_image_b64: z.string().optional(),
+  device_type: z.string().optional(),
+  description: z.string().optional(),
+  colors: z.string().optional(),
+  storage: z.string().optional(),
+  screen_resolution: z.string().optional(),
+  weight: z.string().optional(),
+  thickness: z.string().optional(),
+  release_date: z.string().optional(),
+  camera: z.string().optional(),
+  battery_capacity: z.string().optional(),
+  hardware: z.string().optional(),
+  match_certainty: z.string().optional(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const deviceAutocompleteSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  brand: z.string(),
+  full_name: z.string(),
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type Device = z.infer<typeof deviceSchema>;
+export type DeviceAutocomplete = z.infer<typeof deviceAutocompleteSchema>;
