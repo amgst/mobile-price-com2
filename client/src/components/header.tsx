@@ -11,25 +11,19 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <Link href="/">
-          <a className="flex items-center gap-2 hover-elevate rounded-md px-3 py-2" data-testid="link-home">
-            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">M</span>
-            </div>
-            <span className="font-semibold text-lg hidden sm:inline">MobileHub</span>
-          </a>
+        <Link href="/" className="flex items-center gap-2 hover-elevate rounded-md px-3 py-2" data-testid="link-home">
+          <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-lg">M</span>
+          </div>
+          <span className="font-semibold text-lg hidden sm:inline">MobileHub</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/browse">
-            <a className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-browse">
-              Browse All
-            </a>
+          <Link href="/browse" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-browse">
+            Browse All
           </Link>
-          <Link href="/compare">
-            <a className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-compare">
-              Compare
-            </a>
+          <Link href="/compare" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-compare">
+            Compare
           </Link>
           <a href="https://mobileapi.dev/docs/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-docs">
             API Docs
@@ -53,15 +47,11 @@ export function Header() {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t bg-background px-4 py-4">
           <nav className="flex flex-col gap-4">
-            <Link href="/browse">
-              <a className="text-sm font-medium hover-elevate px-3 py-2 rounded-md block" data-testid="link-browse-mobile">
-                Browse All
-              </a>
+            <Link href="/browse" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md block" data-testid="link-browse-mobile">
+              Browse All
             </Link>
-            <Link href="/compare">
-              <a className="text-sm font-medium hover-elevate px-3 py-2 rounded-md block" data-testid="link-compare-mobile">
-                Compare
-              </a>
+            <Link href="/compare" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md block" data-testid="link-compare-mobile">
+              Compare
             </Link>
             <a href="https://mobileapi.dev/docs/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md block" data-testid="link-docs-mobile">
               API Docs

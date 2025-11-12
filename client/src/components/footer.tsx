@@ -30,24 +30,18 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Devices</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/browse?type=phones">
-                  <a className="hover-elevate inline-block px-1 py-0.5 rounded" data-testid="link-phones">
-                    Phones
-                  </a>
+                <Link href="/browse?type=phones" className="hover-elevate inline-block px-1 py-0.5 rounded" data-testid="link-phones">
+                  Phones
                 </Link>
               </li>
               <li>
-                <Link href="/browse?type=tablets">
-                  <a className="hover-elevate inline-block px-1 py-0.5 rounded" data-testid="link-tablets">
-                    Tablets
-                  </a>
+                <Link href="/browse?type=tablets" className="hover-elevate inline-block px-1 py-0.5 rounded" data-testid="link-tablets">
+                  Tablets
                 </Link>
               </li>
               <li>
-                <Link href="/browse?type=wearables">
-                  <a className="hover-elevate inline-block px-1 py-0.5 rounded" data-testid="link-wearables">
-                    Wearables
-                  </a>
+                <Link href="/browse?type=wearables" className="hover-elevate inline-block px-1 py-0.5 rounded" data-testid="link-wearables">
+                  Wearables
                 </Link>
               </li>
             </ul>
@@ -67,10 +61,8 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <Link href="/compare">
-                  <a className="hover-elevate inline-block px-1 py-0.5 rounded" data-testid="link-compare-footer">
-                    Compare Devices
-                  </a>
+                <Link href="/compare" className="hover-elevate inline-block px-1 py-0.5 rounded" data-testid="link-compare-footer">
+                  Compare Devices
                 </Link>
               </li>
             </ul>
